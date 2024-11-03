@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Notification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgba(0, 255, 255, 0.8); /* Не работает ;( */
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: #3498db;
+            text-align: center;
+            padding: 20px 0;
+            color: white;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .footer {
+            background: #2980b9;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Уведомление</h2>
+        </div>
+        <div class="content">
+            <p>Здраствуйте, <strong>{{ full_name }}</strong>,</p>
+            <p>Вы были успешно зарегистрированы как модератор на платформе Корпоративного Университете ГСП.</p>
+            <p>Перейдите на <a>Платформу</a> для для работы.</p>
+        </div>
+        <div class="footer">
+            <p>© 2024 "Корпоративный Университет ГСП". All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
