@@ -177,6 +177,16 @@ const ImportPage = () => {
             console.error("Ошибка получения нормализованного файла:", error.message);
         }
     };
+
+    useEffect(() => {
+        if (uploadStatus === "done" && rules.length > 0) {
+            const totalProgressCompleted = rules.every(rule => rule.progress === 100);
+    
+            if (totalProgressCompleted) {
+                fetchNormalizedFileUrl(rules[0].id); // Загрузите URL нормализованного файла
+            }
+        }
+    }, [uploadStatus, rules]);
     
 
     useEffect(() => {
