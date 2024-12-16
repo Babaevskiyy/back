@@ -1,62 +1,181 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Notification</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: rgba(0, 255, 255, 0.8); /* Не работает ;( */
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-        .container {
-            max-width: 500px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            background: #3498db;
-            text-align: center;
-            padding: 20px 0;
-            color: white;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-        }
-        .content {
-            padding: 30px;
-        }
-        .footer {
-            background: #2980b9;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            font-size: 12px;
-            border-bottom-left-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h2>Уведомление</h2>
-        </div>
-        <div class="content">
-            <p>Здраствуйте, <strong>{{ full_name }}</strong>,</p>
-            <p>Вы были успешно зарегистрированы как модератор на платформе Корпоративного Университете ГСП.</p>
-            <p>Перейдите на <a>Платформу</a> для для работы.</p>
-        </div>
-        <div class="footer">
-            <p>© 2024 "Корпоративный Университет ГСП". All rights reserved.</p>
+return (
+    <div className="flex h-screen bg-gray-100">
+        <SideBar isOpen={true} />
+
+        <div className="flex-1 flex flex-col items-center justify-center bg-gray-100">
+            {/* Проверка: Справочник ещё не создан */}
+            {!isDirectoryCreated ? (
+                <div className="text-center p-6 bg-white rounded-lg shadow-md">
+                    <h1 className="text-2xl font-semibold mb-4">Создать справочник</h1>
+                    <p className="text-gray-600 mb-6">
+                        Чтобы продолжить, создайте новый справочник или выберите существующий.
+                    </p>
+                    <button
+                        className="px-6 py-3 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        Создать новый или выбрать существующий
+                    </button>
+                </div>
+            ) : (
+                // Основной блок ImportPage
+                <div className="flex-1 flex flex-col items-center bg-gray-100 justify-start mt-36 md:mt-20 px-4">
+                    <div className="flex gap-2 mb-2 flex-wrap">
+                        <button
+                            className={`px-4 py-2 rounded-md shadow-md ${
+                                fileType === "excel" ? "bg-blue-600 text-white" : "bg-white text-gray-800"
+                            }`}
+                            onClick={() => setFileType("excel")}
+                        >
+                            Excel
+                        </button>
+                        <button
+                            className={`px-4 py-2 rounded-md shadow-md ${
+                                fileType === "csv" ? "bg-blue-600 text-white" : "bg-white text-gray-800"
+                            }`}
+                            onClick={() => setFileType("csv")}
+                        >
+                            CSV
+                        </button>
+                        <button
+                            className={`px-4 py-2 rounded-md shadow-md ${
+                                fileType === "json" ? "bg-blue-600 text-white" : "bg-white text-gray-800"
+                            }`}
+                            onClick={() => setFileType("json")}
+                        >
+                            JSON
+                        </button>
+                    </div>
+
+                    <div
+                        className={`w-full max-w-md sm:max-w-lg h-28 flex flex-col items-center justify-center gap-4 text-blue-600 rounded-lg transition mb-4 ${
+                            selectedFile
+                                ? "border-transparent"
+                                : isDragActive
+                                ? "border-4 border-blue-400 bg-blue-50 border-dashed"
+                                : "border-4 border-dashed border-blue-600"
+                        }`}
+                        onClick={!selectedFile ? () => inputRef.current.click() : undefined}
+                        onDragEnter={(e) => {
+                            e.preventDefault();
+                            setIsDragActive(true);
+                        }}
+                        onDragLeave={(e) => {
+                            e.preventDefault();
+                            setIsDragActive(false);
+                        }}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={(e) => {
+                            e.preventDefault();
+                            setIsDragActive(false);
+                            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                                handleFileChange({ target: { files: e.dataTransfer.files } });
+                            }
+                        }}
+                    >
+                        <input ref={inputRef} type="file" onChange={handleFileChange} className="hidden" />
+                        {!selectedFile ? (
+                            <>
+                                <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                                    <UploadIcon className="w-6 h-6 text-blue-600" />
+                                </div>
+                                {isDragActive ? (
+                                    <p className="text-blue-600">Отпустите файл для загрузки</p>
+                                ) : (
+                                    <p className="text-blue-600">Перетащите файл сюда или нажмите</p>
+                                )}
+                            </>
+                        ) : (
+                            <div className="w-full h-24 flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-md shadow-md">
+                                <DocumentIcon className="w-8 h-8 text-blue-600" />
+                                <div className="flex-1">
+                                    <h6 className="text-sm font-medium text-gray-800 flex items-center gap-2">
+                                        {selectedFile.name}
+                                        {normalizedFileUrl && (
+                                            <a
+                                                href={normalizedFileUrl}
+                                                download
+                                                className="text-blue-600 hover:underline flex items-center gap-1"
+                                            >
+                                                <DownloadIcon className="w-5 h-5" />
+                                                Скачать
+                                            </a>
+                                        )}
+                                    </h6>
+                                    <div className="relative w-full h-2 bg-gray-200 rounded-md mt-2">
+                                        <div
+                                            className="absolute top-0 left-0 h-full bg-blue-600 rounded-md transition-all duration-500"
+                                            style={{ width: `${progress}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                                <button
+                                    className={`w-9 h-9 rounded-full flex items-center justify-center ${
+                                        uploadStatus === "uploading" ? "bg-blue-100" : "bg-blue-50"
+                                    }`}
+                                    onClick={clearFileInput}
+                                >
+                                    {uploadStatus === "uploading" ? (
+                                        <span className="text-xs font-semibold text-blue-600">{progress}%</span>
+                                    ) : (
+                                        <XCircleIcon className="w-5 h-5 text-blue-600" />
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {errorMessage && (
+                        <div className="w-full max-w-md sm:max-w-lg text-sm text-red-600 mt-2 text-center">
+                            {errorMessage}
+                        </div>
+                    )}
+
+                    {selectedFile && uploadStatus !== "done" && (
+                        <button
+                            className="w-full max-w-md sm:max-w-lg px-4 py-2 bg-blue-600 text-white font-medium text-sm rounded-md shadow-md hover:bg-blue-700 mb-4"
+                            onClick={handleUpload}
+                        >
+                            {uploadStatus === "uploading" ? "Загрузка..." : "Загрузить"}
+                        </button>
+                    )}
+
+                    {uploadStatus === "done" && renderWidget()}
+                </div>
+            )}
+
+            {/* Модальное окно */}
+            {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h2 className="text-lg font-semibold mb-4">Создать справочник</h2>
+                        <input
+                            type="text"
+                            placeholder="Введите название справочника"
+                            value={directoryName}
+                            onChange={(e) => setDirectoryName(e.target.value)}
+                            className="w-full p-2 border rounded mb-4"
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Отмена
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setIsModalOpen(false);
+                                    setIsDirectoryCreated(true);
+                                }}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                Создать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     </div>
-</body>
-</html>
+);
