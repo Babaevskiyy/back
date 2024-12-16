@@ -172,7 +172,12 @@ const ImportPage = () => {
                 {},
                 { headers: { Authorization: `Bearer ${authTokens.access_token}` } }
             );
-            setNormalizedFileUrl(response.data.url); // Предполагается, что API возвращает URL файла
+    
+            if (response.data?.url) { // Проверьте наличие URL в ответе
+                setNormalizedFileUrl(response.data.url);
+            } else {
+                console.error("API не вернул URL файла.");
+            }
         } catch (error) {
             console.error("Ошибка получения нормализованного файла:", error.message);
         }
