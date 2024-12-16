@@ -1,34 +1,31 @@
 return (
     <div className="flex h-screen bg-gray-100">
         <SideBar isOpen={true} />
-
-        <div className="flex-1 flex flex-col items-center bg-gray-100 p-6">
+        <div className="flex-1 flex flex-col items-center justify-center bg-gray-100">
             {!isDirectoryCreated ? (
-                <div className="text-center p-6 bg-white rounded-lg shadow-md w-full max-w-xl">
-                    <h1 className="text-2xl font-semibold mb-4">Справочники</h1>
-                    <p className="text-gray-600 mb-4">
-                        Создайте новый справочник или выберите существующий, чтобы продолжить.
+                <div className="text-center p-6 bg-white rounded-lg shadow-md w-full max-w-sm">
+                    <h1 className="text-2xl font-semibold mb-4">Создать или выбрать справочник</h1>
+                    <p className="text-gray-600 mb-6">
+                        Чтобы продолжить, выберите существующий справочник или создайте новый.
                     </p>
-
-                    {/* Кнопка для выбора существующего справочника */}
-                    <button
-                        className="w-full py-2 mb-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                        onClick={() => setIsSelectModalOpen(true)}
-                    >
-                        Выбрать существующий справочник
-                    </button>
-
-                    {/* Кнопка для создания нового справочника */}
-                    <button
-                        className="w-full py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                        onClick={() => setIsCreateModalOpen(true)}
-                    >
-                        Создать новый справочник
-                    </button>
+                    <div className="flex flex-col gap-4">
+                        <button
+                            className="w-full px-6 py-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600"
+                            onClick={() => setIsSelectModalOpen(true)}
+                        >
+                            Выбрать существующий
+                        </button>
+                        <button
+                            className="w-full px-6 py-3 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600"
+                            onClick={() => setIsCreateModalOpen(true)}
+                        >
+                            Создать новый
+                        </button>
+                    </div>
                 </div>
             ) : (
-                <div className="w-full max-w-4xl mx-auto">
-                    <div className="flex gap-2 mb-4 flex-wrap justify-center">
+                <div className="flex-1 flex flex-col items-center bg-gray-100 justify-start mt-36 md:mt-20 px-4">
+                    <div className="flex gap-2 mb-2 flex-wrap">
                         <button
                             className={`px-4 py-2 rounded-md shadow-md ${
                                 fileType === "excel" ? "bg-blue-600 text-white" : "bg-white text-gray-800"
@@ -55,9 +52,8 @@ return (
                         </button>
                     </div>
 
-                    {/* Поле для загрузки файлов */}
                     <div
-                        className={`w-full flex flex-col items-center justify-center gap-4 text-blue-600 rounded-lg transition mb-4 ${
+                        className={`w-full max-w-md sm:max-w-lg h-28 flex flex-col items-center justify-center gap-4 text-blue-600 rounded-lg transition mb-4 ${
                             selectedFile
                                 ? "border-transparent"
                                 : isDragActive
@@ -81,77 +77,113 @@ return (
                                 handleFileChange({ target: { files: e.dataTransfer.files } });
                             }
                         }}
-                        style={{ height: "200px", width: "100%" }} // Увеличение высоты и ширины
                     >
                         <input ref={inputRef} type="file" onChange={handleFileChange} className="hidden" />
                         {!selectedFile ? (
                             <>
-                                <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
-                                    <UploadIcon className="w-8 h-8 text-blue-600" />
+                                <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                                    <UploadIcon className="w-6 h-6 text-blue-600" />
                                 </div>
-                                <p className="text-blue-600">Перетащите файл сюда или нажмите</p>
+                                {isDragActive ? (
+                                    <p className="text-blue-600">Отпустите файл для загрузки</p>
+                                ) : (
+                                    <p className="text-blue-600">Перетащите файл сюда или нажмите</p>
+                                )}
                             </>
                         ) : (
-                            <div className="w-full p-4 bg-white border border-gray-300 rounded-lg shadow-md flex items-center gap-4">
-                                <DocumentIcon className="w-10 h-10 text-blue-600" />
+                            <div className="w-full h-24 flex items-center gap-4 p-4 bg-white border border-gray-200 rounded-md shadow-md">
+                                <DocumentIcon className="w-8 h-8 text-blue-600" />
                                 <div className="flex-1">
-                                    <h6 className="text-sm font-medium">{selectedFile.name}</h6>
-                                    <div className="relative w-full h-2 bg-gray-200 rounded-lg mt-2">
+                                    <h6 className="text-sm font-medium text-gray-800">{selectedFile.name}</h6>
+                                    <div className="relative w-full h-2 bg-gray-200 rounded-md mt-2">
                                         <div
-                                            className="absolute top-0 left-0 h-full bg-blue-600 rounded-lg"
+                                            className="absolute top-0 left-0 h-full bg-blue-600 rounded-md transition-all duration-500"
                                             style={{ width: `${progress}%` }}
                                         ></div>
                                     </div>
                                 </div>
-                                <button onClick={clearFileInput}>
-                                    <XCircleIcon className="w-6 h-6 text-red-500" />
+                                <button
+                                    className={`w-9 h-9 rounded-full flex items-center justify-center ${
+                                        uploadStatus === "uploading" ? "bg-blue-100" : "bg-blue-50"
+                                    }`}
+                                    onClick={clearFileInput}
+                                >
+                                    {uploadStatus === "uploading" ? (
+                                        <span className="text-xs font-semibold text-blue-600">{progress}%</span>
+                                    ) : (
+                                        <XCircleIcon className="w-5 h-5 text-blue-600" />
+                                    )}
                                 </button>
                             </div>
                         )}
                     </div>
 
-                    {/* Кнопка загрузки файла */}
+                    {errorMessage && (
+                        <div className="w-full max-w-md sm:max-w-lg text-sm text-red-600 mt-2 text-center">
+                            {errorMessage}
+                        </div>
+                    )}
+
                     {selectedFile && uploadStatus !== "done" && (
                         <button
-                            className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            className="w-full max-w-md sm:max-w-lg px-4 py-2 bg-blue-600 text-white font-medium text-sm rounded-md shadow-md hover:bg-blue-700 mb-4"
                             onClick={handleUpload}
                         >
-                            {uploadStatus === "uploading" ? `Загрузка... ${progress}%` : "Загрузить"}
+                            {uploadStatus === "uploading" ? "Загрузка..." : "Загрузить"}
                         </button>
                     )}
+
+                    {uploadStatus === "done" && renderWidget()}
                 </div>
             )}
 
-            {/* Модальное окно для создания нового справочника */}
-            {isCreateModalOpen && (
+            {/* Модальное окно для выбора справочника */}
+            {isSelectModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                        <h2 className="text-lg font-semibold mb-4">Создать новый справочник</h2>
-                        <button
-                            onClick={() => {
-                                setIsCreateModalOpen(false);
-                                setIsDirectoryCreated(true);
-                            }}
-                            className="w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                        >
-                            Перейти к созданию
-                        </button>
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h2 className="text-lg font-semibold mb-4">Выберите существующий справочник</h2>
+                        <select className="w-full p-2 border rounded mb-4">
+                            <option value="">Заглушка...</option>
+                        </select>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setIsSelectModalOpen(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Закрыть
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
 
-            {/* Модальное окно для выбора существующего справочника */}
-            {isSelectModalOpen && (
+            {/* Модальное окно для создания справочника */}
+            {isCreateModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-                    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-                        <h2 className="text-lg font-semibold mb-4">Выберите существующий справочник</h2>
-                        <p className="text-gray-600 text-center">Функция пока недоступна</p>
-                        <button
-                            onClick={() => setIsSelectModalOpen(false)}
-                            className="w-full py-2 mt-4 bg-gray-300 rounded-lg hover:bg-gray-400"
-                        >
-                            Закрыть
-                        </button>
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                        <h2 className="text-lg font-semibold mb-4">Создать новый справочник</h2>
+                        <input
+                            type="text"
+                            placeholder="Введите название справочника"
+                            className="w-full p-2 border rounded mb-4"
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setIsCreateModalOpen(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Отмена
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setIsDirectoryCreated(true);
+                                    setIsCreateModalOpen(false);
+                                }}
+                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                            >
+                                Создать
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
